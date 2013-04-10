@@ -1,13 +1,8 @@
 defmodule Mix.Tasks.Lingex do
-	def build do
-		Io.puts "build called"
-	end
+end
 
-	def image do
-		Io.puts "image called"
-	end
-
-	def build_image do
-		Io.puts "build_image called"
+defmodule Mix.Tasks.Lingex.build do
+	def run(_Args) do
+		Io.puts "build.run()"
 	end
 end
