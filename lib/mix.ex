@@ -123,7 +123,7 @@ defmodule Mix.Tasks.Lingex do
 		{:ok, {{_, 404, _}, _, _}} ->
 			:not_found
 		other ->
-			Mix.shell.error "LBS: error: #{other}"
+			Mix.shell.error "LBS: error: #{inspect other}"
 		end
 	end
 
@@ -141,6 +141,12 @@ defmodule Mix.Tasks.Lingex do
 end
 
 defmodule Mix.Tasks.Lingex.Build do
+
+	@moduledoc """
+The task uploads *.beam files of the project to the Erlang on Xen Build Service
+and initiates the build process.
+"""
+
 	def run(_args) do
 		config = Mix.project
 		opts = config[:lingex_opts]
@@ -153,6 +159,11 @@ defmodule Mix.Tasks.Lingex.Build do
 end
 
 defmodule Mix.Tasks.Lingex.Image do
+
+	@moduledoc """
+The task retrieves the built Xen image from the Erlang on Xen Build Service.
+"""
+
 	def run(_args) do
 		config = Mix.project
 		opts = config[:lingex_opts]
@@ -162,6 +173,12 @@ defmodule Mix.Tasks.Lingex.Image do
 end
 
 defmodule Mix.Tasks.Lingex.Build_image do
+
+	@moduledoc """
+The task builds a Xen image for the project using the Erlang on Xen Build
+Service.
+"""
+
 	def run(_args) do
 		config = Mix.project
 		opts = config[:lingex_opts]
