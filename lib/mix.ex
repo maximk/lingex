@@ -22,7 +22,13 @@ defmodule Mix.Tasks.Lingex do
 
 		apps = lc {:import_lib, app} inlist bopts, do: app
 		app_list = Enum.map_join apps, ",", fn(x) -> "\"#{x}\"" end
-		req_body = "{\"import_lib\":[#{app_list}]}"
+
+		if bopts[:elixir_lib] do
+			req_body = "{\"import_lib\":[#{app_list}],\"elixir_lib\":true}"
+		else
+			Mix.shell.info "Warning: elixir_lib:true option missing"
+			req_body = "{\"import_lib\":[#{app_list}]}"
+		end
 
 		Mix.shell.info "Build started for #{project}"
 		{:ok, banner} = call_build_service :post, "/build/#{project}", [],
@@ -52,6 +58,9 @@ defmodule Mix.Tasks.Lingex do
 		check_opts opts, copts, [opt|bopts]
 	end
 	defp check_opts([{:import_lib, _lib} =opt|opts], copts, bopts) do
+		check_opts opts, copts, [opt|bopts]
+	end
+	defp check_opts([{:elixir_lib, _} =opt|opts], copts, bopts) do
 		check_opts opts, copts, [opt|bopts]
 	end
 	defp check_opts([opt|_opts], _copts, _bopts) do
