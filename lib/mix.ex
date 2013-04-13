@@ -127,15 +127,20 @@ defmodule Mix.Tasks.Lingex do
 		end
 	end
 
-	def collect_files(config) do
+	def collect_files(config, opts) do
 		compile_path = config[:compile_path]
 
 		files = Path.wildcard Path.join compile_path, "*"
 
 		deps_path = config[:deps_path]
-		Enum.reduce config[:deps], files, fn({name, _, _}, acc) ->
+		files = Enum.reduce config[:deps], files, fn({name, _, _}, acc) ->
 			dir = Path.join [deps_path,name,"ebin/*"]
 			acc ++ Path.wildcard dir
+		end
+
+		misc_paths = lc {:import, path} inlist opts, do: path
+		Enum.reduce misc_paths, files, fn(path, acc) ->
+			acc ++ Path.wildcard path
 		end
 	end
 end
@@ -151,7 +156,7 @@ and initiates the build process.
 		config = Mix.project
 		opts = config[:lingex_opts]
 
-		files = Mix.Tasks.Lingex.collect_files config
+		files = Mix.Tasks.Lingex.collect_files config, opts
 
 		project = config[:app]	
 		Mix.Tasks.Lingex.start_build project, files, opts
@@ -183,7 +188,7 @@ Service.
 		config = Mix.project
 		opts = config[:lingex_opts]
 
-		files = Mix.Tasks.Lingex.collect_files config
+		files = Mix.Tasks.Lingex.collect_files config, opts
 
 		project = config[:app]	
 		Mix.Tasks.Lingex.start_build project, files, opts
