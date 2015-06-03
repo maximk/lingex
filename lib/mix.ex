@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Lingex do
 		zip_files = Enum.map files, fn file -> :erlang.binary_to_list file end
 		{:ok, {_, zip_data}} = :zip.zip(any_name, zip_files, [:memory])
 
-		Mix.shell.info "Uploading project archive [#{size zip_data} byte(s)]"
+		Mix.shell.info "Uploading project archive [#{byte_size zip_data} byte(s)]"
 
 		:ok = call_build_service :put, '/projects/#{project}', [],
 									{'application/zip', zip_data}, copts
@@ -74,7 +74,7 @@ defmodule Mix.Tasks.Lingex do
 		{:ok, resp_body} ->
 			image_file = "vmling"
 			image_bin = :erlang.list_to_binary resp_body
-			Mix.shell.info "Saving image to #{image_file} [#{size image_bin} byte(s)]"
+			Mix.shell.info "Saving image to #{image_file} [#{byte_size image_bin} byte(s)]"
 			File.write! image_file, image_bin
 			Mix.shell.info "LBS: image saved to #{image_file}"
 
