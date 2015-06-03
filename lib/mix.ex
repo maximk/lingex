@@ -137,7 +137,7 @@ defmodule Mix.Tasks.Lingex do
 	end
 
 	def collect_files(config, opts) do
-		compile_path = config[:compile_path]
+		compile_path = Mix.Project.compile_path config
 
 		files = Path.wildcard Path.join compile_path, "*"
 
