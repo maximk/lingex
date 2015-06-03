@@ -20,7 +20,7 @@ defmodule Mix.Tasks.Lingex do
 									{'application/zip', zip_data}, copts
 		Mix.shell.info "Project archive uploaded"
 
-		apps = lc {:import_lib, app} inlist bopts, do: app
+		apps = for {:import_lib, app} <- bopts, do: app
 		app_list = Enum.map_join apps, ",", fn(x) -> "\"#{x}\"" end
 
 		if bopts[:elixir_lib] do
@@ -146,7 +146,7 @@ defmodule Mix.Tasks.Lingex do
 		  collect_dep_files(deps_path, x, acc) 
 		end
 
-		misc_paths = lc {:import, path} inlist opts, do: path
+		misc_paths = for {:import, path} <- opts, do: path
 		Enum.reduce misc_paths, files, fn(path, acc) ->
 			acc ++ Path.wildcard path
 		end
