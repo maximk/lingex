@@ -11,16 +11,16 @@ defmodule Mix.Tasks.Lingex do
 	defp start_build(project, files, copts, bopts) do
 		Mix.shell.info "Compressing #{length files} file(s)"
 		any_name = 'tmptmp.zip'
-		zip_files = Enum.map files, fn file -> Kernel.binary_to_list file end
+		zip_files = Enum.map files, fn file -> :erlang.binary_to_list file end
 		{:ok, {_, zip_data}} = :zip.zip(any_name, zip_files, [:memory])
 
-		Mix.shell.info "Uploading project archive [#{size zip_data} byte(s)]"
+		Mix.shell.info "Uploading project archive [#{byte_size zip_data} byte(s)]"
 
 		:ok = call_build_service :put, '/projects/#{project}', [],
 									{'application/zip', zip_data}, copts
 		Mix.shell.info "Project archive uploaded"
 
-		apps = lc {:import_lib, app} inlist bopts, do: app
+		apps = for {:import_lib, app} <- bopts, do: app
 		app_list = Enum.map_join apps, ",", fn(x) -> "\"#{x}\"" end
 
 		if bopts[:elixir_lib] do
@@ -73,8 +73,8 @@ defmodule Mix.Tasks.Lingex do
 											:none, copts do
 		{:ok, resp_body} ->
 			image_file = "vmling"
-			image_bin = list_to_binary resp_body
-			Mix.shell.info "Saving image to #{image_file} [#{size image_bin} byte(s)]"
+			image_bin = :erlang.list_to_binary resp_body
+			Mix.shell.info "Saving image to #{image_file} [#{byte_size image_bin} byte(s)]"
 			File.write! image_file, image_bin
 			Mix.shell.info "LBS: image saved to #{image_file}"
 
@@ -137,7 +137,7 @@ defmodule Mix.Tasks.Lingex do
 	end
 
 	def collect_files(config, opts) do
-		compile_path = config[:compile_path]
+		compile_path = Mix.Project.compile_path config
 
 		files = Path.wildcard Path.join compile_path, "*"
 
@@ -146,7 +146,7 @@ defmodule Mix.Tasks.Lingex do
 		  collect_dep_files(deps_path, x, acc) 
 		end
 
-		misc_paths = lc {:import, path} inlist opts, do: path
+		misc_paths = for {:import, path} <- opts, do: path
 		Enum.reduce misc_paths, files, fn(path, acc) ->
 			acc ++ Path.wildcard path
 		end
@@ -172,7 +172,7 @@ and initiates the build process.
 """
 
 	def run(_args) do
-		config = Mix.project
+		config = Mix.Project.config
 		opts = config[:lingex_opts]
 
 		files = Mix.Tasks.Lingex.collect_files config, opts
@@ -189,7 +189,7 @@ The task retrieves the built Xen image from the Erlang on Xen Build Service.
 """
 
 	def run(_args) do
-		config = Mix.project
+		config = Mix.Project.config
 		opts = config[:lingex_opts]
 		project = config[:app]
 		Mix.Tasks.Lingex.retrieve_image project, opts
@@ -204,7 +204,7 @@ Service.
 """
 
 	def run(_args) do
-		config = Mix.project
+		config = Mix.Project.config
 		opts = config[:lingex_opts]
 
 		files = Mix.Tasks.Lingex.collect_files config, opts
