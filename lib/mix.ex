@@ -172,7 +172,7 @@ and initiates the build process.
 """
 
 	def run(_args) do
-		config = Mix.project
+		config = Mix.Project.config
 		opts = config[:lingex_opts]
 
 		files = Mix.Tasks.Lingex.collect_files config, opts
@@ -189,7 +189,7 @@ The task retrieves the built Xen image from the Erlang on Xen Build Service.
 """
 
 	def run(_args) do
-		config = Mix.project
+		config = Mix.Project.config
 		opts = config[:lingex_opts]
 		project = config[:app]
 		Mix.Tasks.Lingex.retrieve_image project, opts
@@ -204,7 +204,7 @@ Service.
 """
 
 	def run(_args) do
-		config = Mix.project
+		config = Mix.Project.config
 		opts = config[:lingex_opts]
 
 		files = Mix.Tasks.Lingex.collect_files config, opts
